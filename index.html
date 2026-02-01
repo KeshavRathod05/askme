@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>A Special Surprise ❤️</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Quicksand:wght@400;600&display=swap');
+        body { font-family: 'Quicksand', sans-serif; background: linear-gradient(135deg, #fff5f7 0%, #ffdee5 100%); overflow: hidden; touch-action: none; }
+        .cursive { font-family: 'Dancing Script', cursive; }
+        .glass { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.4); }
+        .floating-heart { position: absolute; pointer-events: none; animation: floatUp 4s ease-in forwards; z-index: 100; }
+        @keyframes floatUp { 0% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; } 100% { transform: translateY(-110vh) scale(2) rotate(360deg); opacity: 0; } }
+        #noBtn { transition: all 0.1s ease-out; }
+    </style>
+</head>
+<body class="flex flex-col items-center justify-center min-h-screen p-4">
+
+    <div id="heart-container"></div>
+
+    <div id="mainCard" class="glass p-8 rounded-[2.5rem] shadow-2xl text-center max-w-sm w-full relative z-10">
+        <div class="mb-4 text-6xl animate-bounce">💝</div>
+        <h1 class="cursive text-4xl text-pink-600 mb-2">Hey Beautiful...</h1>
+        <p class="text-gray-600 mb-6 font-medium">Will you be my Valentine?</p>
+
+        <div class="bg-pink-50 rounded-2xl p-3 mb-8 border border-pink-100">
+            <p class="text-[10px] text-pink-400 font-bold uppercase tracking-widest mb-1">Countdown to Feb 14</p>
+            <div id="timer" class="text-lg font-mono text-pink-600 font-bold">00:00:00:00</div>
+        </div>
+
+        <div class="flex flex-col gap-4 justify-center items-center h-48 relative">
+            <button id="yesBtn" class="bg-pink-500 text-white font-bold py-4 px-16 rounded-full shadow-lg text-2xl z-20 active:scale-90 transition-all">
+                YES!
+            </button>
+            <button id="noBtn" class="bg-white text-pink-300 font-bold py-2 px-8 rounded-full absolute border border-pink-100 shadow-sm z-10">
+                No
+            </button>
+        </div>
+    </div>
+
+    <div id="successScreen" class="hidden fixed inset-0 flex flex-col items-center justify-center bg-white/95 z-50 scale-0 transition-all duration-700">
+        <div class="text-8xl mb-4">✨🥰✨</div>
+        <h1 class="cursive text-5xl text-pink-600 mb-2">I Knew It!</h1>
+        <p class="text-gray-500 mb-8">What's our date plan?</p>
+        <div class="grid grid-cols-1 gap-3 w-64">
+            <button onclick="selectChoice('Dinner 🍝')" class="bg-pink-500 text-white py-4 rounded-xl font-bold active:scale-95 transition">Dinner 🍝</button>
+            <button onclick="selectChoice('Movie 🍿')" class="bg-pink-100 text-pink-600 py-4 rounded-xl font-bold active:scale-95 transition">Movie 🍿</button>
+            <button onclick="selectChoice('Long Drive 🚗')" class="bg-pink-100 text-pink-600 py-4 rounded-xl font-bold active:scale-95 transition">Long Drive 🚗</button>
+        </div>
+    </div>
+
+    <div id="thankYouOverlay" class="hidden fixed inset-0 flex flex-col items-center justify-center bg-pink-600/90 text-white z-[60] p-6 text-center">
+        <div class="text-7xl mb-6 animate-pulse">💖</div>
+        <h2 class="cursive text-5xl mb-4">You're Amazing!</h2>
+        <p id="finalMsg" class="text-xl opacity-90"></p>
+        <p class="mt-4 text-sm font-bold uppercase tracking-widest opacity-70">Redirecting to WhatsApp...</p>
+    </div>
+
+    <script>
+        const PHONE = "919284609066";
+        let yesScale = 1;
+
+        // Countdown
+        function updateTimer() {
+            const diff = new Date(2026, 1, 14) - new Date();
+            const d = Math.floor(diff / 86400000);
+            const h = Math.floor((diff / 3600000) % 24);
+            const m = Math.floor((diff / 60000) % 60);
+            const s = Math.floor((diff / 1000) % 60);
+            document.getElementById('timer').innerText = `${d}d ${h}h ${m}m ${s}s`;
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        // No-Escape Buttons
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+
+        function moveNo() {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = x + 'px';
+            noBtn.style.top = y + 'px';
+            yesScale += 0.2;
+            yesBtn.style.transform = `scale(${yesScale})`;
+            noBtn.innerText = ["Try again!", "Nope!", "Wrong choice!", "Nice try 😉"][Math.floor(Math.random()*4)];
+        }
+
+        noBtn.addEventListener('touchstart', (e) => { e.preventDefault(); moveNo(); });
+        noBtn.addEventListener('mouseover', moveNo);
+
+        yesBtn.addEventListener('click', () => {
+            const ss = document.getElementById('successScreen');
+            ss.classList.remove('hidden');
+            setTimeout(() => ss.classList.add('scale-100'), 10);
+            setInterval(createHeart, 200);
+        });
+
+        // Final Thank You & WhatsApp
+        function selectChoice(choice) {
+            const overlay = document.getElementById('thankYouOverlay');
+            const msg = document.getElementById('finalMsg');
+            
+            msg.innerText = `Your choice of ${choice} is locked in! I'm sending it to me right now. See you on Feb 14th! 🌹`;
+            overlay.classList.remove('hidden');
+            
+            setTimeout(() => {
+                const text = `I said YES! ❤️ Let's do ${choice} for our Valentine's date!`;
+                window.location.href = `https://wa.me/${PHONE}?text=${encodeURIComponent(text)}`;
+            }, 2500);
+        }
+
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.className = 'floating-heart text-2xl';
+            heart.innerHTML = ['❤️', '💖', '✨', '🌹'][Math.floor(Math.random()*4)];
+            heart.style.left = Math.random() * 100 + 'vw';
+            heart.style.top = '100vh';
+            document.getElementById('heart-container').appendChild(heart);
+            setTimeout(() => heart.remove(), 4000);
+        }
+    </script>
+</body>
+</html>
